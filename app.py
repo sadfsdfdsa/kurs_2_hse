@@ -21,9 +21,9 @@ from routes.Work import *
 from routes.Check import *
 
 # frontend index page
-@app.route('/')
-def index():
-    return render_template('index.html')
+# @app.route('/')
+# def index():
+#     return render_template('index.html')
 
 
 # give all to vue router
