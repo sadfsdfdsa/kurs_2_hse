@@ -5,9 +5,9 @@ import psycopg2
 
 class Database:
     def __init__(self):
-        self.__conn: Connection = psycopg2.connect(dbname='dfc7o140smeekc',
-                                                   user='gdpehvortnpwri',
-                                                   password='142003089fd79f3b273399a8daf13e8bb3293ca792840b415de38609c49a0ad2',
+        self.__conn: Connection = psycopg2.connect(dbname='d3oi066003lbg0',
+                                                   user='gmucjltksntcwq',
+                                                   password='b96981750f45f8ec12cb29af9c6ea1d874c0595be7ded490ba22965c86dd3f93',
                                                    host='ec2-34-254-69-72.eu-west-1.compute.amazonaws.com')
 
         self.User = User(self.__conn)
@@ -16,7 +16,7 @@ class Database:
         self.Status = Status(self.__conn)
         self.Role = Role(self.__conn)
 
-        # self.create_tables()
+        self.create_tables()
 
     def create_tables(self):
         self.User.create_table()

@@ -35,10 +35,8 @@ class BaseModel:
 class Status(BaseModel):
     def create_table(self):
         with self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor) as cursor:
-            cursor.execute('''CREATE TABLE IF NOT EXISTS "status" (
-                                "id" serial,
-                                "name" varchar(30),
-                            );''')
+            cursor.execute('''CREATE TABLE IF NOT EXISTS "status" ( "id" serial, "name" varchar(30))''')
+            self.conn.commit()
         return True
 
     def get_by_id(self, id: int):
@@ -95,6 +93,7 @@ class User(BaseModel):
                                 "middle_name" varchar(30),
                                 "role_id" int
                             );''')
+            self.conn.commit()
         return True
 
     def login(self, login: str, password: str) -> dict:
