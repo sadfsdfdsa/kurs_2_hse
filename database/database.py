@@ -16,7 +16,7 @@ class Database:
         self.Status = Status(self.__conn)
         self.Role = Role(self.__conn)
 
-        self.create_tables()
+        # self.create_tables()
 
     def create_tables(self):
         self.User.create_table()
