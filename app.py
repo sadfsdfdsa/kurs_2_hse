@@ -18,7 +18,6 @@ db = Database()
 # import routes
 from routes.User import *
 from routes.Work import *
-from routes.Check import *
 
 # frontend index page
 # @app.route('/')
