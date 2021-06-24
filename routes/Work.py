@@ -10,7 +10,10 @@ from utils.helper import validate_params, rest
 def get_works():
     userId = request.args.get('user')
 
-    result = db.Work.get_created(userId)
+    if (userId):
+        result = db.Work.get_created(userId)
+    else:
+        result = db.Work.get_all()
 
     if result:
         for work in result:
@@ -19,6 +22,33 @@ def get_works():
         return jsonify(result)
 
     return jsonify([])
+
+
+@app.route('/api/v1/works/<int:id>/archive', methods=["POST"])
+def archive_work(id):
+    if id:
+        db.Work.archive(id)
+        return jsonify(id)
+    return 'Error', 500
+
+
+@app.route('/api/v1/works/<int:id>', methods=["PUT"])
+def edit_work(id):
+    data = request.json
+
+    if not id:
+        return 'Error', 500
+
+    if not validate_params(data, 'creatorId', 'name', 'documentLink', 'workLink', 'deadline', 'directorScore', 'reviewerScore', 'comment'):
+        return 'Error', 403
+
+    success = db.Work.edit(id, data['creatorId'],  data['name'],  data['documentLink'],
+                           data['workLink'],  data['deadline'],  data['directorScore'],  data['reviewerScore'], data['comment'])
+
+    if success:
+        return jsonify(True)
+
+    return 'Error', 500
 
 
 @app.route('/api/v1/work', methods=["POST"])

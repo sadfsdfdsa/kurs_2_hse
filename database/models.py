@@ -115,6 +115,27 @@ class User(BaseModel):
             users = cursor.fetchall()
             return self.low_serialize(many=users)
 
+    def create(self, login, password, first_name, second_name, middle_name):
+        with self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor) as cursor:
+            cursor.execute(
+                f'''INSERT INTO "user"
+                 ("id", "login", "password", "first_name", "second_name", "middle_name", "role_id")
+                 VALUES (DEFAULT, '{login}', '{password}', '{first_name}', '{second_name}', '{middle_name}', 1) 
+                 RETURNING id''')
+            id = cursor.fetchone()[0]
+            self.conn.commit()
+            return id
+
+    def edit(self, id, first_name, second_name, middle_name):
+        with self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor) as cursor:
+            cursor.execute(
+                f'''UPDATE "user" SET "first_name"='{first_name}',
+                 "second_name"='{second_name}', 
+                 "middle_name"='{middle_name}'
+                   WHERE "id"={id} ''')
+            self.conn.commit()
+            return True
+
     @staticmethod
     def low_serialize(one=None, many=None):
         if one is not None:
@@ -209,7 +230,6 @@ class Check(BaseModel):
             checks = cursor.fetchall()
             return self.serialize(many=checks)
 
-
     @staticmethod
     def serialize(one=None, many=None):
         if one is not None:
@@ -271,6 +291,13 @@ class Work(BaseModel):
                     works.append(work)
             return works
 
+    def get_all(self):
+        with self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor) as cursor:
+            cursor.execute(
+                f'''SELECT * FROM "work"''')
+            works = cursor.fetchall()
+            return self.serialize(many=works)
+
     def create(self, creatorId, name, workLink, documentLink, created, directorScore=0, reviewerScore=0, comment='', deadline=-1):
         with self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor) as cursor:
             cursor.execute(
@@ -281,6 +308,22 @@ class Work(BaseModel):
             id = cursor.fetchone()[0]
             self.conn.commit()
             return id
+
+    def archive(self, id):
+        with self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor) as cursor:
+            cursor.execute(
+                f'''UPDATE "work" SET "status_id"=4, "total_score"=0 WHERE "id"={id}''')
+            self.conn.commit()
+            return
+
+    def edit(self, id, creator_id, name, document_link, work_link, deadline, director_score, reviewer_score, comment):
+        with self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor) as cursor:
+            cursor.execute(
+                f'''UPDATE "work" SET "creator_id"={creator_id}, "name"='{name}', "document_link"='{document_link}',
+                 "work_link"='{work_link}', "deadline"={deadline}, "director_score"={director_score},  
+                 "reviewer_score"={reviewer_score},  "comment"='{comment}' WHERE "id"={id}''')
+            self.conn.commit()
+            return True
 
     @staticmethod
     def serialize(one=None, many=None):
